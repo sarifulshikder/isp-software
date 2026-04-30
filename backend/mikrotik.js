@@ -1,19 +1,21 @@
-const Mikronode = require('mikronode');
+const { RouterOSAPI } = require('routeros-client');
 
 const connectMikrotik = async () => {
-    const device = new Mikronode('10.5.50.1'); // আপনার মাইক্রোটিক আইপি
-    
-    return new Promise((resolve, reject) => {
-        device.connect('admin', 'Sa983106') // ইউজার এবং পাসওয়ার্ড
-            .then(([client]) => {
-                console.log("✅ Connected to MikroTik Router");
-                resolve(client);
-            })
-            .catch(err => {
-                console.error("❌ MikroTik Connection Failed:", err);
-                resolve(null);
-            });
+    const api = new RouterOSAPI({
+        host: '10.5.50.1', // আপনার মাইক্রোটিক আইপি
+        user: 'admin',
+        password: 'your_password', // এখানে আপনার মাইক্রোটিক পাসওয়ার্ড দিন
+        port: 8728
     });
+
+    try {
+        await api.connect();
+        console.log("✅ Connected to MikroTik via routeros-client");
+        return api;
+    } catch (err) {
+        console.error("❌ MikroTik Connection Failed:", err);
+        return null;
+    }
 };
 
 module.exports = connectMikrotik;

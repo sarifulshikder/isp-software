@@ -9,27 +9,18 @@ app.post('/add-customer', async (req, res) => {
     const { name, username, password, profile } = req.body;
 
     try {
-        const client = await connectMikrotik();
+        const api = await connectMikrotik();
         
-        if (client) {
-            // চ্যানেল ওপেন করে কমান্ড পাঠানো
-            const channel = client.openChannel();
-            channel.write('/ppp/secret/add', {
+        if (api) {
+            // routeros-client এ কমান্ড পাঠানোর নিয়ম
+            await api.write('/ppp/secret/add', {
                 'name': username,
                 'password': password,
                 'profile': (profile || 'default'),
                 'service': 'pppoe'
             });
-
-            channel.on('done', () => {
-                console.log("✅ Secret added to MikroTik successfully!");
-                channel.close();
-            });
-
-            channel.on('trap', (err) => {
-                console.error("❌ MikroTik Trap Error:", err);
-                channel.close();
-            });
+            console.log("🚀 Secret Created in MikroTik");
+            api.close();
         }
 
         const result = await pool.query(
@@ -37,8 +28,9 @@ app.post('/add-customer', async (req, res) => {
             [name, username, password]
         );
 
-        res.json({ message: "Process started", data: result.rows[0] });
+        res.json({ message: "Customer added successfully", data: result.rows[0] });
     } catch (err) {
+        console.error("Error:", err.message);
         res.status(500).json({ error: err.message });
     }
 });
