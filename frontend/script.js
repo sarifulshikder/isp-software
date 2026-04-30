@@ -9,7 +9,8 @@ async function addCustomer() {
     }
 
     try {
-        const response = await fetch('http://103.164.50.8:5000/add-customer', {
+        // সরাসরি আইপি না দিয়ে /api/ পাথ ব্যবহার করছি যা nginx হ্যান্ডেল করবে
+        const response = await fetch('/api/add-customer', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, username, password, profile: 'default' })
@@ -20,9 +21,10 @@ async function addCustomer() {
             alert('✅ কাস্টমার অ্যাড হয়েছে!');
             location.reload();
         } else {
-            alert('❌ এরর: ' + result.error);
+            alert('❌ এরর: ' + (result.error || 'Unknown Error'));
         }
     } catch (error) {
-        alert('সার্ভারে সমস্যা হয়েছে। কন্সোল চেক করুন।');
+        console.error('Fetch Error:', error);
+        alert('সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। আপনার ব্রাউজার কনসোল (F12) চেক করুন।');
     }
 }
