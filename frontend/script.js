@@ -3,7 +3,10 @@ async function addCustomer() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    if (!name || !username || !password) { alert("সবগুলো ঘর পূরণ করুন!"); return; }
+    if (!name || !username || !password) {
+        alert("দয়া করে সব ঘর পূরণ করুন!");
+        return;
+    }
 
     try {
         const response = await fetch('/api/add-customer', {
@@ -11,13 +14,20 @@ async function addCustomer() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, username, password, profile: 'default' })
         });
-        if (response.ok) { 
-            alert('✅ Success!'); 
-            loadCustomers(); // লিস্ট আপডেট করা
-        } else { 
-            alert('❌ Error adding customer'); 
+
+        if (response.ok) {
+            alert('✅ সফলভাবে অ্যাড হয়েছে!');
+            document.getElementById('name').value = '';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            loadCustomers(); // লিস্ট রিফ্রেশ করা
+        } else {
+            const err = await response.json();
+            alert('❌ ভুল হয়েছে: ' + err.error);
         }
-    } catch (e) { alert('Connection Failed!'); }
+    } catch (e) {
+        alert('সার্ভারের সাথে কানেক্ট করা যাচ্ছে না!');
+    }
 }
 
 async function loadCustomers() {
@@ -30,15 +40,16 @@ async function loadCustomers() {
         customers.forEach(user => {
             tableBody.innerHTML += `
                 <tr>
-                    <td>${user.name}</td>
+                    <td>${user.name || 'N/A'}</td>
                     <td><b>${user.username}</b></td>
-                    <td>${user.profile}</td>
+                    <td>${user.profile || 'default'}</td>
                     <td><span class="badge bg-success">Active</span></td>
-                    <td><button class="btn btn-sm btn-danger">Disable</button></td>
+                    <td><button class="btn btn-sm btn-outline-danger">Disable</button></td>
                 </tr>`;
         });
-    } catch (e) { console.error('Failed to load customers'); }
+    } catch (e) {
+        console.error('লিস্ট লোড করতে সমস্যা হয়েছে');
+    }
 }
 
-// পেজ লোড হলে লিস্ট দেখাও
 window.onload = loadCustomers;
