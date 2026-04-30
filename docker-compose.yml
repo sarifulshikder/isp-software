@@ -1,27 +1,39 @@
+version: '3.8'
+
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.alpine
-    container_name: isp_backend
+  isp_db:
+    image: postgres:15-alpine
+    container_name: isp_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: isp_manager
+    ports:
+      - "5432:5432"
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - postgres_data:/var/lib/postgresql/data
+
+  isp_backend:
+    build: ./backend
+    container_name: isp_backend
     ports:
       - "5000:5000"
-    depends_on:
-      - db
-
-  db:
-    image: postgres:16-alpine
-    container_name: isp_db
-    restart: always
     environment:
-      POSTGRES_USER: isp_user
-      POSTGRES_PASSWORD: your_secure_password
-      POSTGRES_DB: isp_management
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: isp_db
+      DB_PORT: 5432
+      DB_NAME: isp_manager
+    depends_on:
+      - isp_db
+
+  isp_frontend:
+    build: ./frontend
+    container_name: isp_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - isp_backend
 
 volumes:
-  pgdata:
+  postgres_data:

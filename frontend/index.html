@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ISP Manager Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>ISP Customer Management</h2>
+        <div id="add-form">
+            <div class="form-group">
+                <input type="text" id="name" placeholder="Full Name">
+            </div>
+            <div class="form-group">
+                <input type="text" id="username" placeholder="PPPoE Username">
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="PPPoE Password">
+            </div>
+            <button onclick="addCustomer()">Add Customer to MikroTik</button>
+        </div>
+
+        <div class="customer-list">
+            <h3>Active Customers</h3>
+            <table id="customerTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
