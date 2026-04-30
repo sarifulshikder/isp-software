@@ -1,10 +1,12 @@
 const Mikronode = require('mikronode');
 
 const connectMikrotik = async () => {
-    const device = new Mikronode('YOUR_MIKROTIK_IP'); // এখানে মাইক্রোটিক আইপি দিন
+    // এখানে '192.168.88.1' এর জায়গায় আপনার মাইক্রোটিকের রিয়েল আইপি দিন
+    const device = new Mikronode('10.5.50.1'); 
     
     try {
-        const [client] = await device.connect('admin', 'your_password'); // ইউজার ও পাসওয়ার্ড
+        // এখানে 'admin' এবং 'your_password' এর জায়গায় আপনার লগইন তথ্য দিন
+        const [client] = await device.connect('admin', 'Sa983106'); 
         console.log("✅ Connected to MikroTik Router via API");
         return client;
     } catch (err) {
