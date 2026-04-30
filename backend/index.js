@@ -12,14 +12,24 @@ app.post('/add-customer', async (req, res) => {
         const client = await connectMikrotik();
         
         if (client) {
-            // মাইক্রোডি লাইব্রেরিতে কমান্ড পাঠানোর সঠিক পদ্ধতি
-            client.write('/ppp/secret/add', {
+            // চ্যানেল ওপেন করে কমান্ড পাঠানো
+            const channel = client.openChannel();
+            channel.write('/ppp/secret/add', {
                 'name': username,
                 'password': password,
                 'profile': (profile || 'default'),
                 'service': 'pppoe'
             });
-            console.log("🚀 Command sent to MikroTik");
+
+            channel.on('done', () => {
+                console.log("✅ Secret added to MikroTik successfully!");
+                channel.close();
+            });
+
+            channel.on('trap', (err) => {
+                console.error("❌ MikroTik Trap Error:", err);
+                channel.close();
+            });
         }
 
         const result = await pool.query(
@@ -27,12 +37,12 @@ app.post('/add-customer', async (req, res) => {
             [name, username, password]
         );
 
-        res.json({ message: "Request processed", data: result.rows[0] });
+        res.json({ message: "Process started", data: result.rows[0] });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.get('/', (req, res) => res.send('ISP Billing API: Stable Version'));
+app.get('/', (req, res) => res.send('ISP Billing API: Stable MikroTik Sync Active'));
 
 app.listen(5000, '0.0.0.0', () => console.log('🚀 Server running on port 5000'));
